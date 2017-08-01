@@ -149,12 +149,12 @@ class Request implements RequestInterface
      */
     public function getHeaderLine($name)
     {
-        // TODO: Implement getHeaderLine() method.
+        return implode(',', $this->getHeader($name));
     }
 
     /**
      * Return an instance with the provided value replacing the specified header.
-     *
+     * 返回一个规定的header以及对应值value的实例
      * While header names are case-insensitive, the casing of the header will
      * be preserved by this function, and returned from getHeaders().
      *
@@ -169,7 +169,19 @@ class Request implements RequestInterface
      */
     public function withHeader($name, $value)
     {
-        // TODO: Implement withHeader() method.
+        if (!is_array($value)){
+            $value = [$value];
+        }
+        $value = $this->trimHeaderValues($value);
+        $normalized = strtolower($name);
+        $new = clone $this;
+        if (isset($new->headerNames[$normalized])) {
+            unset($new->headers[$new->headerNames[$normalized]]);
+        }
+        $new->headerNames[$normalized] = $name;
+        $new->headers[$normalized] = $value;
+
+        return $new;
     }
 
     /**
@@ -359,4 +371,18 @@ class Request implements RequestInterface
     {
         // TODO: Implement withUri() method.
     }
+
+    /**
+     * @desc: 去除消息体两边的空白字符
+     * @author:Samuel Su(suhanyu)
+     * @date:17/8/1
+     * @param String $param
+     * @return Array
+     */
+    private function trimHeaderValues(array $values) {
+        return array_map(function($value){
+            return trim($value);
+        }, $values);
+    }
+
 }
