@@ -202,7 +202,21 @@ class Request implements RequestInterface
      */
     public function withAddedHeader($name, $value)
     {
-        // TODO: Implement withAddedHeader() method.
+        if (!is_array($value)){
+            $value = [$value];
+        }
+        $value = $this->trimHeaderValues($value);
+        $new = clone $this;
+        $lowerName = strtolower($name);
+        if (isset($this->headerNames[$lowerName])) {
+            $new->headerNames[$lowerName] = $name;
+            $new->headers[$name] = array_merge($this->headers[$name], $value);
+        } else {
+            $new->headerNames[$lowerName] = $name;
+            $new->headers[$name] = $value;
+        }
+
+        return $new;
     }
 
     /**
