@@ -233,7 +233,16 @@ class Request implements RequestInterface
      */
     public function withoutHeader($name)
     {
-        // TODO: Implement withoutHeader() method.
+        $lowerName = strtolower($name);
+        if (isset($this->headerNames[$lowerName])) {
+            $new = clone $this;
+            $headerName = $new->headerNames[$lowerName];
+            unset($new->headerNames[$lowerName], $new->headers[$name]);
+        } else {
+            $new = $this;
+        }
+
+        return $new;
     }
 
     /**
